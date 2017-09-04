@@ -1,0 +1,34 @@
+{
+  "name": "scrum-svr",
+  "version": "1.0.0",
+  "description": "Proyecto para servicios REST SCRUM",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snakeful/scrum-svr.git"
+  },
+  "keywords": [
+    "ful",
+    "scrum",
+    "svr",
+    "bootcamp"
+  ],
+  "author": {
+    "name": "Carlos Ful",
+    "email": "<fulblind@gmail.com>"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/snakeful/scrum-svr/issues"
+  },
+  "homepage": "https://github.com/snakeful/scrum-svr#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "ful-ms-svr": "^1.1.3",
+    "knex": "^0.13.0",
+    "pg": "^7.3.0"
+  }
+}
