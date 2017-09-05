@@ -1,7 +1,7 @@
 module.exports = function (router, db) {
   return require('../resource')(router, db, {
     resource: 'projects',
-    schema: 'scrum',
+    schema: 'process',
     table: 'projects',
     fields: ['name', 'stakeholderId'],
     orderBy: 'id',

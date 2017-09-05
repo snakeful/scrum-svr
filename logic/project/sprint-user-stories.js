@@ -1,8 +1,8 @@
 module.exports = function (router, db) {
   return require('../resource')(router, db, {
-    resource: 'sprints-user-stories',
+    resource: 'sprint-user-stories',
     schema: 'process',
-    table: 'sprintsUserStories',
+    table: 'sprintUserStories',
     fields: ['sprintId', 'userStoryId'],
     orderBy: 'id',
     operations: {
