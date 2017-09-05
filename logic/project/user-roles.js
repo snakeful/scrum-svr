@@ -1,10 +1,11 @@
 module.exports = function (router, db) {
   return require('../resource')(router, db, {
-    resource: 'user-stories',
-    schema: 'process',
-    table: 'userStories',
-    fields: ['name', 'desc', 'priorityId', 'statusId'],
-    orderBy: 'id',
+    resource: 'user-roles',
+    schema: 'profile',
+    table: 'userRoles',
+    fieldId: 'userId',
+    fields: ['userId', 'roleId'],
+    orderBy: ['userId', 'roleId'],
     operations: {
       getAll: true,
       getById: true,

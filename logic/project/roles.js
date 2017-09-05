@@ -3,13 +3,11 @@ module.exports = function (router, db) {
     resource: 'roles',
     schema: 'profile',
     table: 'roles',
-    fields: ['desc'],
+    fields: ['name'],
     orderBy: 'id',
     operations: {
       getAll: true,
-      getById: true,
-      create: true,
-      update: true
+      getById: true
     }
   });
 };

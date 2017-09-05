@@ -3,11 +3,14 @@ module.exports = function (router, db) {
     resource: 'sprints',
     schema: 'process',
     table: 'sprints',
-    fields: ['desc'],
+    fields: ['name', 'start', 'end', 'projectId'],
     orderBy: 'id',
     operations: {
       getAll: true,
-      getById: true
+      getById: true,
+      insert: true,
+      update: true,
+      delete: true
     }
   });
 };

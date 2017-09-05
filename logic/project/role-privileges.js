@@ -3,8 +3,8 @@ module.exports = function (router, db) {
     resource: 'role-privileges',
     schema: 'profile',
     table: 'rolePrivileges',
-    fields: ['desc'],
-    orderBy: 'id',
+    fields: ['roleId', 'create', 'read', 'udapte', 'delete', 'execute'],
+    orderBy: 'roleId',
     operations: {
       getAll: true,
       getById: true,

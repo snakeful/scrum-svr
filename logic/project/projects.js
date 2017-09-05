@@ -3,7 +3,7 @@ module.exports = function (router, db) {
     resource: 'projects',
     schema: 'scrum',
     table: 'projects',
-    fields: ['name', 'desc', 'priorityId', 'statusId'],
+    fields: ['name', 'stakeholderId'],
     orderBy: 'id',
     operations: {
       getAll: true,

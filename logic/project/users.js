@@ -3,7 +3,7 @@ module.exports = function (router, db) {
     resource: 'users',
     schema: 'profile',
     table: 'users',
-    fields: ['desc'],
+    fields: ['user', 'firstName', 'lastName'],
     orderBy: 'id',
     operations: {
       getAll: true,

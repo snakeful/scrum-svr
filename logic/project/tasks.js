@@ -3,8 +3,8 @@ module.exports = function (router, db) {
     resource: 'tasks',
     schema: 'process',
     table: 'tasks',
-    fields: ['name', 'desc', 'priorityId', 'statusId'],
-    orderBy: 'id',
+    fields: ['userStoryId', 'name', 'desc','parentTaskId', 'statusId', 'userId', 'originId', 'points', 'burnedPoints'],
+    orderBy: ['id', 'userStoryId'],
     operations: {
       getAll: true,
       getById: true,

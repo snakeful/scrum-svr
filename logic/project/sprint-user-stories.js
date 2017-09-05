@@ -3,7 +3,7 @@ module.exports = function (router, db) {
     resource: 'sprints-user-stories',
     schema: 'process',
     table: 'sprintsUserStories',
-    fields: ['desc'],
+    fields: ['sprintId', 'userStoryId'],
     orderBy: 'id',
     operations: {
       getAll: true,
