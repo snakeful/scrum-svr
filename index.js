@@ -21,6 +21,5 @@ let db = require('./data/database')({
 require('walk-sync')('./logic/project').filter(function(file) {
   return (/\.js$/i).test(file);
 }).map(function(file) {
-  console.log(file);
   require('.//logic//project//' + file);
 });
