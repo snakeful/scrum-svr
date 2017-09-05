@@ -7,7 +7,7 @@ server.run(port);
 
 let router = express.Router();
 server.use(express.static('public'));
-server.use('/api/histories', router);
+server.use('/api/scrum', router);
 let db = require('./data/database')({
   client: 'pg',
   version: '9.6',
@@ -18,4 +18,9 @@ let db = require('./data/database')({
     database : 'fulscrum'
   }
 });
-require('./logic/history/priorities')(router, db);
+require('walk-sync')('./logic/project').filter(function(file) {
+  return (/\.js$/i).test(file);
+}).map(function(file) {
+  console.log(file);
+  require('.//logic//project//' + file);
+});

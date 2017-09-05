@@ -1,8 +1,8 @@
 module.exports = {
   /**
    * 
-   * @param {Array of fields to set} fields 
-   * @param {object with the fields to be set to new object} obj 
+   * @param {*} fields Array of fields to set
+   * @param {*} obj Object with the fields to be set to new object
    */
   copyFields (fields, obj) {
     console.assert(fields && fields instanceof Array, 'fields must be set and be an Array');
