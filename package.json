@@ -32,5 +32,8 @@
     "pg": "^7.3.0",
     "pg-error": "^1.0.0",
     "walk-sync": "^0.3.2"
+  },
+  "devDependencies": {
+    "apidoc": "^0.17.6"
   }
 }
