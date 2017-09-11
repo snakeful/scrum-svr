@@ -3,7 +3,6 @@ const pgError = require('pg-error');
 let port = 3000;
 console.log(`Ejecutando servidor SCRUM. ${process.pid}`);
 server.port = port;
-server.use(require('body-parser').json());
 server.run(port);
 
 let router = express.Router();
