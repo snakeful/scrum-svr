@@ -1,19 +1,7 @@
-module.exports = function (router, db, config) {
-  console.assert(config, 'Configuration must be sent.');
-  console.assert(config.table, 'Table must be sent to update table.');
-  console.assert(config.fields, 'Fields must be sent to create or update data.');
-  console.assert(config.operations && Object.keys(config.operations).length > 1, 'Operations must be sent and have at least one key to set http operations.');
-  let $utils = require('./utils');
-  config.fieldId = config.fieldId || 'id';
-  config.orderBy = config.orderBy || 'id';
-  if (config.operations.getAll) {
-    router.get(`/${config.resource}`, (req, res) => {
-      (config.schema ? db.withSchema(config.schema) : db)
-      .select(req.query.field)
-      .from(config.table)
-      .orderBy(config.orderBy)
-      .offset(req.query.offset || 0)
-      .limit(req.query.limit || 100)
+module.exports = function (router, entity) {
+  if (entity.getAll) {
+    router.get(`/${entity.resource}`, (req, res) => {
+      entity.getAll(req.query.field, req.query.offset, req.query.limit)
       .then((data) => {
         res.json(data);
       }).catch((err) => {
@@ -24,14 +12,9 @@ module.exports = function (router, db, config) {
       });
     });
   }
-  if (config.operations.getById) {
-    router.get(`/${config.resource}/:${config.fieldId}`, (req, res) => {
-      const where = {};
-      where[config.fieldId] = req.params[config.fieldId];
-      (config.schema ? db.withSchema(config.schema) : db)
-      .select(req.query.field)
-      .from(config.table)
-      .where(where)
+  if (entity.getById) {
+    router.get(`/${entity.resource}/:${entity.fieldId}`, (req, res) => {
+      entity.getById(req.query.field, req.params[entity.fieldId])
       .then((data) => {
         if (data.length === 0) {
           return  res.status(404).json({
@@ -42,18 +25,14 @@ module.exports = function (router, db, config) {
       }).catch((err, data) => {
         res.status(500).json({
           err: err,
-          id: req.params[config.fieldId]
+          id: req.params[entity.fieldId]
         });
       });
     });
   }
-  if (config.operations.create) {
-    router.post(`/${config.resource}`, (req, res) => {
-      let obj = $utils.copyFields(config.fields, req.body);
-      (config.schema ? db.withSchema(config.schema) : db)
-      .table(config.table)
-      .returning(config.fieldId)
-      .insert(obj)
+  if (entity.insert) {
+    router.post(`/${entity.resource}`, (req, res) => {
+      entity.insert(req.body)
       .then((data) => {
         res.status(201).json(data[0]);
       }).catch((err) => {
@@ -64,15 +43,9 @@ module.exports = function (router, db, config) {
       });
     });
   }
-  if (config.operations.update) {
-    router.put(`/${config.resource}/:${config.fieldId}`, (req, res) => {
-      let obj = $utils.copyFields(config.fields, req.body);
-      const where = {};
-      where[config.fieldId] = req.params[config.fieldId];
-      (config.schema ? db.withSchema(config.schema) : db)
-      .table(config.table)
-      .where(where)
-      .update(obj)
+  if (entity.update) {
+    router.put(`/${entity.resource}/:${entity.fieldId}`, (req, res) => {
+      entity.update(req.body)
       .then((data) => {
         res.json(data);
       }).catch((err) => {
@@ -83,14 +56,9 @@ module.exports = function (router, db, config) {
       });
     });
   }
-  if (config.operations.delete)
-  router.delete(`/${config.resource}/:${config.fieldId}`, (req, res) => {
-    const where = {};
-    where[config.fieldId] = req.params[config.fieldId];
-    (config.schema ? db.withSchema(config.schema) : db)
-    .table(config.table)
-    .where(where)
-    .del()
+  if (entity.delete)
+  router.delete(`/${entity.resource}/:${entity.fieldId}`, (req, res) => {
+    entity.delete(req.params[entity.fieldId])
     .then((data) => {
       res.json(data);
     }).catch((err) => {
