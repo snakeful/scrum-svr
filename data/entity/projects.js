@@ -3,7 +3,7 @@ module.exports = entity({
   resource: 'projects',
   schema: 'process',
   table: 'projects',
-  fields: ['name', 'desc', 'stakeholderId', 'productOwnerId', 'scrumMasterId', 'scrumTeam'],
+  fields: ['id', 'name', 'desc', 'stakeholderId', 'productOwnerId', 'scrumMasterId', 'scrumTeam'],
   orderBy: 'id',
   operations: {
     getAll: true,
