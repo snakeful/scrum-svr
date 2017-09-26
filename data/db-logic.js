@@ -31,6 +31,9 @@ module.exports = function (config) {
         .from(config.table)
         .where(where);
     };
+    entity.onGetById = config.onGetById ? config.onGetById : data => {
+      return Promise.resolve(data);
+    }
   }
   if (config.operations.create) {
     entity.insert = function (object) {

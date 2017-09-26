@@ -24,7 +24,10 @@ module.exports = function (router, entity) {
             msg: 'Record not found'
           });
         }
-        res.json(data[0]);
+        entity.onGetById(data[0])
+        .then(data => {
+          res.json(data);
+        })
       }).catch((err, data) => {
         res.status(500).json({
           err: err,
