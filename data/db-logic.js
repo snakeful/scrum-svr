@@ -18,6 +18,9 @@ module.exports = function (config) {
         .offset(offset)
         .limit(limit);
     };
+    entity.onGetAll = config.onGetAll ? config.onGetAll : data => {
+      return Promise.resolve(data);
+    }
   }
   if (config.operations.getById) {
     entity.getById = function (fields, id) {

@@ -3,7 +3,10 @@ module.exports = function (router, entity) {
     router.get(`/${entity.resource}`, (req, res) => {
       entity.getAll(req.query.field, req.query.offset, req.query.limit)
       .then((data) => {
-        res.json(data);
+        entity.onGetAll(data)
+        .then(data => {
+          res.json(data);
+        });
       }).catch((err) => {
         res.status(500).json({
           err: err,
