@@ -3,7 +3,7 @@ module.exports = entity({
   resource: 'users',
   schema: 'profile',
   table: 'users',
-  fields: ['id', 'user', 'firstName', 'lastName', 'roleId'],
+  fields: ['id', 'user', 'firstName', 'lastName', 'email', 'admin'],
   orderBy: 'id',
   operations: {
     getAll: true,
