@@ -1,16 +1,4 @@
-module.exports = function (router, db) {
-  return require('../resource')(router, db, {
-    resource: 'user-stories',
-    schema: 'process',
-    table: 'userStories',
-    fields: ['name', 'desc', 'priorityId', 'statusId'],
-    orderBy: 'id',
-    operations: {
-      getAll: true,
-      getById: true,
-      create: true,
-      update: true,
-      delete: true
-    }
-  });
-};
+const $router = require('express').Router();
+const $entity = require('../../data/entity/user-stories');
+require('../resource')($router, $entity);
+module.exports = $router;
