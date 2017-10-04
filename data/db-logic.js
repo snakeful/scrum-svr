@@ -10,13 +10,17 @@ module.exports = function (config) {
   };
   config.orderBy = config.orderBy || 'id';
   if (config.operations.getAll) {
-    entity.getAll = function (fields, offset = 0, limit = 100) {
-      return (config.schema ? $db.withSchema(config.schema) : $db)
+    entity.getAll = function (fields, offset = 0, limit = 100, where) {
+      let query = (config.schema ? $db.withSchema(config.schema) : $db)
         .select(fields || config.fields)
         .from(config.table)
         .orderBy(config.orderBy)
         .offset(offset)
         .limit(limit);
+      if (where) {
+        query = query.where(where);
+      }
+      return query;
     };
     entity.onGetAll = config.onGetAll ? config.onGetAll : data => {
       return Promise.resolve(data);

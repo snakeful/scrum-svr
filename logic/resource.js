@@ -1,7 +1,7 @@
 module.exports = function (router, entity) {
   if (entity.getAll) {
     router.get(`/${entity.resource}`, (req, res) => {
-      entity.getAll(req.query.field, req.query.offset, req.query.limit)
+      entity.getAll(req.query.field, req.query.offset, req.query.limit, req.query.where)
       .then((data) => {
         entity.onGetAll(data)
         .then(data => {
