@@ -64,7 +64,7 @@ module.exports = function (router, entity) {
   }
   if (entity.delete)
   router.delete(`/${entity.resource}/:${entity.fieldId}`, (req, res) => {
-    entity.delete(req.params[entity.fieldId])
+    entity.delete(req.params[entity.fieldId], req.query.where)
     .then((data) => {
       res.json(data);
     }).catch((err) => {
