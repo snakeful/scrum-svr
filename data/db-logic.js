@@ -60,9 +60,9 @@ module.exports = function (config) {
     };
   }
   if (config.operations.delete) {
-    entity.delete = function (object) {
+    entity.delete = function (id) {
       const where = {};
-      where[entity.fieldId] = req.params[entity.fieldId];
+      where[entity.fieldId] = id;
       return (config.schema ? $db.withSchema(config.schema) : $db)
         .table(config.table)
         .where(where)
