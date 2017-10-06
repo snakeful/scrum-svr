@@ -1,5 +1,5 @@
-const entity = require('../db-logic');
-module.exports = entity({
+const entityLogic = require('../db-logic');
+module.exports = entityLogic({
   resource: 'sprints',
   schema: 'process',
   table: 'sprints',
