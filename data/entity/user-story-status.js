@@ -1,8 +1,8 @@
 const entityLogic = require('../db-logic');
 module.exports = entityLogic({
-  resource: 'status',
+  resource: 'user-story-status',
   schema: 'process',
-  table: 'status',
+  table: 'userStoryStatus',
   fields: ['id', 'name', 'desc'],
   orderBy: 'id',
   operations: {
