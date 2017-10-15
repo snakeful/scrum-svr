@@ -40,7 +40,10 @@ module.exports = function (router, entity) {
     router.post(`/${entity.resource}`, (req, res) => {
       entity.insert(req.body)
       .then((data) => {
-        res.status(201).json(data[0]);
+        entity.onInsert(data)
+        .then(data => {
+          res.status(201).json(data[0]);
+        });
       }).catch((err) => {
         res.status(500).json({
           err: err,
@@ -53,7 +56,9 @@ module.exports = function (router, entity) {
     router.put(`/${entity.resource}/:${entity.fieldId}`, (req, res) => {
       entity.update(req.body)
       .then((data) => {
-        res.json(data);
+        entity.onUpdate(data => {
+          res.json(data);
+        });
       }).catch((err) => {
         res.status(500).json({
           err: err,
@@ -66,7 +71,9 @@ module.exports = function (router, entity) {
   router.delete(`/${entity.resource}/:${entity.fieldId}`, (req, res) => {
     entity.delete(req.params[entity.fieldId], req.query.where)
     .then((data) => {
-      res.json(data);
+      entity.onDelete(data => {
+        res.json(data);
+      });
     }).catch((err) => {
       res.status(500).json({
         err: err,

@@ -24,7 +24,7 @@ module.exports = function (config) {
     };
     entity.onGetAll = config.onGetAll ? config.onGetAll : data => {
       return Promise.resolve(data);
-    }
+    };
   }
   if (config.operations.getById) {
     entity.getById = function (fields, id) {
@@ -37,7 +37,7 @@ module.exports = function (config) {
     };
     entity.onGetById = config.onGetById ? config.onGetById : data => {
       return Promise.resolve(data);
-    }
+    };
   }
   if (config.operations.create) {
     entity.insert = function (object) {
@@ -46,6 +46,9 @@ module.exports = function (config) {
         .table(config.table)
         .returning(entity.fieldId)
         .insert(obj);
+    };
+    entity.onInsert = config.onInsert ? config.onInsert : data => {
+      return Promise.resolve(data);
     };
   }
   if (config.operations.update) {
@@ -58,6 +61,9 @@ module.exports = function (config) {
         .where(where)
         .update(obj);
     };
+    entity.onUpdate = config.onUpdate ? config.onUpdate : data => {
+      return Promise.resolve(data);
+    };
   }
   if (config.operations.delete) {
     entity.delete = function (id, where) {
@@ -69,6 +75,9 @@ module.exports = function (config) {
         .table(config.table)
         .where(where)
         .del();
+    };
+    entity.onDelete = config.onDelete ? config.onDelete : data => {
+      return Promise.resolve(data);
     };
   }
   return entity;
