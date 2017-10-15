@@ -21,8 +21,8 @@ module.exports = function (router, entity) {
             msg: 'Record not found'
           });
         }
-        entity.onGetById(data).then(() => {
-          res.json(data);
+        entity.onGetById(data[0]).then(() => {
+          res.json(data[0]);
         })
       }).catch((err, data) => {
         res.status(500).json({
