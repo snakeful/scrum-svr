@@ -22,8 +22,8 @@ module.exports = function (config) {
       }
       return query;
     };
-    entity.onGetAll = config.onGetAll ? config.onGetAll : data => {
-      return Promise.resolve(data);
+    entity.onGetAll = config.onGetAll ? config.onGetAll : () => {
+      return Promise.resolve();
     };
   }
   if (config.operations.getById) {
@@ -35,8 +35,8 @@ module.exports = function (config) {
         .from(config.table)
         .where(where);
     };
-    entity.onGetById = config.onGetById ? config.onGetById : data => {
-      return Promise.resolve(data);
+    entity.onGetById = config.onGetById ? config.onGetById : () => {
+      return Promise.resolve();
     };
   }
   if (config.operations.create) {
@@ -47,8 +47,8 @@ module.exports = function (config) {
         .returning(entity.fieldId)
         .insert(obj);
     };
-    entity.onInsert = config.onInsert ? config.onInsert : data => {
-      return Promise.resolve(data);
+    entity.onInsert = config.onInsert ? config.onInsert : () => {
+      return Promise.resolve();
     };
   }
   if (config.operations.update) {
@@ -61,8 +61,8 @@ module.exports = function (config) {
         .where(where)
         .update(obj);
     };
-    entity.onUpdate = config.onUpdate ? config.onUpdate : data => {
-      return Promise.resolve(data);
+    entity.onUpdate = config.onUpdate ? config.onUpdate : () => {
+      return Promise.resolve();
     };
   }
   if (config.operations.delete) {
@@ -76,8 +76,8 @@ module.exports = function (config) {
         .where(where)
         .del();
     };
-    entity.onDelete = config.onDelete ? config.onDelete : data => {
-      return Promise.resolve(data);
+    entity.onDelete = config.onDelete ? config.onDelete : () => {
+      return Promise.resolve();
     };
   }
   return entity;
