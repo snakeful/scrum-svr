@@ -1,4 +1,5 @@
-const { express, server } = require('ful-ms-svr');
+const express = require('express');
+const { server } = require('ful-ms-svr');
 let port = 4201;
 console.log(`Ejecutando servidor SCRUM. ${process.pid}`);
 server.port = port;
