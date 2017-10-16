@@ -1,4 +1,7 @@
 module.exports = function (server) {
+  /**
+   * CRUD's
+   */
   server.use('/api', require('./roles'));
   server.use('/api', require('./users'));
   server.use('/api', require('./projects'));
@@ -9,4 +12,8 @@ module.exports = function (server) {
   server.use('/api', require('./tasks'));
   server.use('/api', require('./task-status'));
   server.use('/api', require('./origins'));
+  /**
+   * Reports
+   */
+  server.use('/api/reports', require('./burndown-chart'));
 }
