@@ -56,7 +56,7 @@ WITH RECURSIVE sprints AS (
   JOIN process.tasks tasks ON tasks."userStoryId" = sprintUserStories."userStoryId"
   JOIN process."taskPoints" taskPoints ON taskPoints."taskId" = tasks.id
   WHERE
-    sprintUserStories."sprintId" = 1
+    sprintUserStories."sprintId" = ?
 	GROUP BY 1
   ORDER BY 1
 )
