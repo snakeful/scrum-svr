@@ -12,7 +12,7 @@ WITH RECURSIVE sprints AS (
       ELSE
         MAX(taskLastDayPoints.date)
     END "endSprint",
-    SUM(CAST(tasks.points AS DOUBLE PRECISION)) "totalPointsPerDay",
+    SUM(CAST(tasks.points AS DOUBLE PRECISION)) - SUM(tasks.points) / (date_part('day', sprints.end::DATE) - date_part('day', sprints.start::DATE) + 1) "totalPointsPerDay",
     SUM(tasks.points) / (date_part('day', sprints.end::DATE) - date_part('day', sprints.start::DATE) + 1) "pointsPerDay"
 	FROM process.sprints sprints
   JOIN process."sprintUserStories" sprintUserStories ON sprintUserStories."sprintId" = sprints.id
@@ -30,7 +30,7 @@ WITH RECURSIVE sprints AS (
     sprints."remainingPoints" - COALESCE(points.points, 0) "remainingPoints",
     sprints."endSprint",
     CASE WHEN (sprints."totalDaysSprint" - 1) > 0 THEN
-      (sprints."totalDaysSprint" - 1) * sprints."pointsPerDay"
+      (sprints."totalDaysSprint" - 2) * sprints."pointsPerDay"
     ELSE
       0
     END "totalPointsPerDay",
@@ -38,7 +38,7 @@ WITH RECURSIVE sprints AS (
   FROM sprints sprints
   LEFT JOIN taskPointsPerDay points ON points.date = (sprints."daySprint" + 1 * INTERVAL '1 day')::DATE
   WHERE
-    sprints."daySprint" <= sprints."endSprint"
+    sprints."daySprint" < sprints."endSprint"
 ), taskLastDayPoints AS (
   SELECT DISTINCT
     MAX(taskPoints.date) date,
