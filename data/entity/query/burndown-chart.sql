@@ -2,7 +2,7 @@ WITH RECURSIVE sprints AS (
   SELECT DISTINCT
    	sprints.id,
   	sprints.start "daySprint",
-   	date_part('day', sprints.end::DATE) - date_part('day', sprints.start::DATE) + 1 "totalDaysSprint",
+   	date_part('doy', sprints.end::DATE) - date_part('doy', sprints.start::DATE) + 1 "totalDaysSprint",
    	SUM(CAST(tasks.points AS DOUBLE PRECISION)) - SUM(COALESCE(taskPoints.points, 0)) "remainingPoints",
     CASE
       WHEN MAX(taskLastDayPoints.date) IS NULL THEN
@@ -12,8 +12,8 @@ WITH RECURSIVE sprints AS (
       ELSE
         MAX(taskLastDayPoints.date)
     END "endSprint",
-    SUM(CAST(tasks.points AS DOUBLE PRECISION)) - SUM(tasks.points) / (date_part('day', sprints.end::DATE) - date_part('day', sprints.start::DATE) + 1) "totalPointsPerDay",
-    SUM(tasks.points) / (date_part('day', sprints.end::DATE) - date_part('day', sprints.start::DATE) + 1) "pointsPerDay"
+    SUM(CAST(tasks.points AS DOUBLE PRECISION)) - SUM(tasks.points) / (date_part('doy', sprints.end::DATE) - date_part('doy', sprints.start::DATE) + 1) "totalPointsPerDay",
+    SUM(tasks.points) / (date_part('doy', sprints.end::DATE) - date_part('doy', sprints.start::DATE) + 1) "pointsPerDay"
 	FROM process.sprints sprints
   JOIN process."sprintUserStories" sprintUserStories ON sprintUserStories."sprintId" = sprints.id
   JOIN process.tasks tasks ON tasks."userStoryId" = sprintUserStories."userStoryId"
