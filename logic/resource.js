@@ -34,25 +34,44 @@ module.exports = function (router, entity) {
   }
   if (entity.insert) {
     router.post(`/${entity.resource}`, (req, res) => {
-      entity.insert(req.body).then(data => {
-        entity.onInsert(req.body, data).then(() => {
-          res.status(201).json(data[0]);
+      const data = {
+        new: req.body
+      };
+      entity.trx(trx => {
+        return entity.beforeInsert(trx, data).then(() => {
+          return entity.insert(trx, data.new);
+        }).then(inserted => {
+          return entity.afterInsert(trx, data, inserted).then(() => {
+            trx.commit();
+            res.status(201).json(inserted[0]);
+          });
         });
       }).catch(err => {
+        trx.rollback();
         res.status(500).json({
           err: err,
-          data: req.body
+          data: data.new
         });
-      });
+      });;
     });
   }
   if (entity.update) {
     router.put(`/${entity.resource}/:${entity.fieldId}`, (req, res) => {
-      entity.update(req.body).then(data => {
-        entity.onUpdate(data).then(() => {
-          res.json(data);
+      const data = {
+        new: req.body
+      };
+      data.new[entity.fieldId] = req.params[entity.fieldId];
+      entity.trx(trx => {
+        entity.beforeUpdate(trx, data).then(() => {
+          return entity.update(trx, data.new);
+        }).then(updated => {
+          return entity.afterUpdate(trx, data, updated).then(() => {
+            trx.commit();
+            res.json(updated);
+          });
         });
       }).catch(err => {
+        trx.rollback();
         res.status(500).json({
           err: err,
           data: req.body
