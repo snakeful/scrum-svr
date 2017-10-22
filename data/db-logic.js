@@ -5,6 +5,7 @@ module.exports = function (config) {
   console.assert(config.table, 'Table must be sent to update table.');
   console.assert(config.fields, 'Fields must be sent to create or update data.');
   const entity = {
+    trx: $db.transaction,
     resource: config.resource,
     fieldId: config.fieldId || 'id'
   };
@@ -28,8 +29,9 @@ module.exports = function (config) {
   }
   if (config.operations.getById) {
     entity.getById = function (fields, id) {
-      const where = {};
-      where[entity.fieldId] = id;
+      const where = {
+        [entity.fieldId]: id
+      };
       return (config.schema ? $db.withSchema(config.schema) : $db)
         .select(config.fields || fields)
         .from(config.table)
@@ -40,28 +42,36 @@ module.exports = function (config) {
     };
   }
   if (config.operations.create) {
-    entity.insert = function (object) {
+    entity.insert = function (trx, object) {
       let obj = $utils.copyFields(config.fields, object);
       return (config.schema ? $db.withSchema(config.schema) : $db)
         .table(config.table)
         .returning(entity.fieldId)
+        .transacting(trx)
         .insert(obj);
     };
-    entity.onInsert = config.onInsert ? config.onInsert : () => {
+    entity.beforeInsert = config.beforeInsert ? config.beforeInsert : () => {
+      return Promise.resolve();
+    };
+    entity.afterInsert = config.afterInsert ? config.afterInsert : () => {
       return Promise.resolve();
     };
   }
   if (config.operations.update) {
-    entity.update = function (object) {
+    entity.update = function (trx, object) {
       let obj = $utils.copyFields(config.fields, object);
       const where = {};
       where[entity.fieldId] = object[entity.fieldId];
       return (config.schema ? $db.withSchema(config.schema) : $db)
         .table(config.table)
         .where(where)
+        .transacting(trx)
         .update(obj);
     };
-    entity.onUpdate = config.onUpdate ? config.onUpdate : () => {
+    entity.beforeUpdate = config.beforeUpdate ? config.beforeUpdate : () => {
+      return Promise.resolve();
+    };
+    entity.afterUpdate = config.afterUpdate ? config.afterUpdate : () => {
       return Promise.resolve();
     };
   }
