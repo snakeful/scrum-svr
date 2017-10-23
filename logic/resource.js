@@ -1,8 +1,8 @@
 module.exports = function (router, entity) {
   if (entity.getAll) {
     router.get(`/${entity.resource}`, (req, res) => {
-      entity.getAll(req.query.field, req.query.offset, req.query.limit, req.query.where).then(data => {
-        entity.onGetAll(data).then(() => {
+      entity.getAll(null, req.query.field, req.query.offset, req.query.limit, req.query.where).then(data => {
+        entity.onGetAll(null, data).then(() => {
           res.json(data);
         });
       }).catch(err => {
@@ -15,13 +15,13 @@ module.exports = function (router, entity) {
   }
   if (entity.getById) {
     router.get(`/${entity.resource}/:${entity.fieldId}`, (req, res) => {
-      entity.getById(req.query.field, req.params[entity.fieldId]).then(data => {
+      entity.getById(null, req.query.field, req.params[entity.fieldId]).then(data => {
         if (data.length === 0) {
           return res.status(404).json({
             msg: 'Record not found'
           });
         }
-        entity.onGetById(data[0]).then(() => {
+        entity.onGetById(null, data[0]).then(() => {
           res.json(data[0]);
         })
       }).catch(err => {
@@ -39,12 +39,11 @@ module.exports = function (router, entity) {
       };
       let trx;
       entity.trx(trxp => {
-        trx =trxp;
+        trx = trxp;
         return entity.beforeInsert(trx, data).then(() => {
           return entity.insert(trx, data.new);
         }).then(inserted => {
           return entity.afterInsert(trx, data, inserted).then(() => {
-            trx.commit();
             res.status(201).json(inserted[0]);
           });
         });
@@ -70,7 +69,6 @@ module.exports = function (router, entity) {
           return entity.update(trx, data.new);
         }).then(updated => {
           return entity.afterUpdate(trx, data, updated).then(() => {
-            trx.commit();
             res.json(updated);
           });
         });
@@ -85,11 +83,16 @@ module.exports = function (router, entity) {
   }
   if (entity.delete)
     router.delete(`/${entity.resource}/:${entity.fieldId}`, (req, res) => {
-      entity.delete(req.params[entity.fieldId], req.query.where).then(data => {
-        entity.onDelete(req.query).then(() => {
-          res.json(data);
+      let trx;
+      entity.trx(trxp => {
+        trx = trxp;
+        return entity.delete(trx, req.params[entity.fieldId], req.query.where).then(data => {
+          return entity.onDelete(trx, req.query).then(() => {
+            res.json(data);
+          });
         });
       }).catch(err => {
+        trx.rollback();
         res.status(500).json({
           err: err,
           data: req.body

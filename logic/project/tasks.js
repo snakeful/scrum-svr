@@ -13,7 +13,7 @@ $entity.beforeUpdate = (trx, data) => {
     if (task.statusId === 3) {
       task.executedPoints = task.points;
     }
-    $entity.getById(null, task.id).then(oldTask => {
+    $entity.getById(null, null, task.id).then(oldTask => {
       data.old = oldTask[0];
       return resolve();
     }, reject);

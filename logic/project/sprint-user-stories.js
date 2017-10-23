@@ -4,7 +4,7 @@ const $entityUserStory = require('../../data/entity/user-stories');
 function updateUserStory (trx, userStoryId, statusId) {
   userStoryId = parseInt(userStoryId, 0);
   return new Promise((resolve, reject) => {
-    $entityUserStory.getById({}, userStoryId).then(userStory => {
+    $entityUserStory.getById(trx, null, userStoryId).then(userStory => {
       userStory[0].statusId = statusId;
       $entityUserStory.update(trx, userStory[0]).then(() => {
         resolve();

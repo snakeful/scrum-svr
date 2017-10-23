@@ -11,31 +11,38 @@ module.exports = function (config) {
   };
   config.orderBy = config.orderBy || 'id';
   if (config.operations.getAll) {
-    entity.getAll = function (fields, offset = 0, limit = 100, where) {
+    entity.getAll = function (trx, fields, offset = 0, limit = 100, where) {
       let query = (config.schema ? $db.withSchema(config.schema) : $db)
         .select(fields || config.fields)
         .from(config.table)
-        .orderBy(config.orderBy)
-        .offset(offset)
-        .limit(limit);
+        .orderBy(config.orderBy);
+      if (trx) {
+        query.transacting(trx);
+      }
       if (where) {
         query = query.where(where);
       }
-      return query;
+      return query
+        .offset(offset)
+        .limit(limit);
     };
     entity.onGetAll = config.onGetAll ? config.onGetAll : () => {
       return Promise.resolve();
     };
   }
   if (config.operations.getById) {
-    entity.getById = function (fields, id) {
+    entity.getById = function (trx, fields, id) {
       const where = {
         [entity.fieldId]: id
       };
-      return (config.schema ? $db.withSchema(config.schema) : $db)
-        .select(config.fields || fields)
-        .from(config.table)
-        .where(where);
+      let query = (config.schema ? $db.withSchema(config.schema) : $db)
+        .select(config.fields || fields);
+      if (trx) {
+        query = query.transacting(trx);
+      }
+      return query
+      .from(config.table)
+      .where(where);
     };
     entity.onGetById = config.onGetById ? config.onGetById : () => {
       return Promise.resolve();
@@ -44,11 +51,13 @@ module.exports = function (config) {
   if (config.operations.create) {
     entity.insert = function (trx, object) {
       let obj = $utils.copyFields(config.fields, object);
-      return (config.schema ? $db.withSchema(config.schema) : $db)
+      let query = (config.schema ? $db.withSchema(config.schema) : $db)
         .table(config.table)
-        .returning(entity.fieldId)
-        .transacting(trx)
-        .insert(obj);
+        .returning(entity.fieldId);
+      if (trx) {
+        query = query.transacting(trx)
+      }
+      return query.insert(obj);
     };
     entity.beforeInsert = config.beforeInsert ? config.beforeInsert : () => {
       return Promise.resolve();
@@ -60,13 +69,16 @@ module.exports = function (config) {
   if (config.operations.update) {
     entity.update = function (trx, object) {
       let obj = $utils.copyFields(config.fields, object);
-      const where = {};
-      where[entity.fieldId] = object[entity.fieldId];
-      return (config.schema ? $db.withSchema(config.schema) : $db)
+      const where = {
+        [entity.fieldId]: object[entity.fieldId]
+      };
+      let query = (config.schema ? $db.withSchema(config.schema) : $db)
         .table(config.table)
-        .where(where)
-        .transacting(trx)
-        .update(obj);
+        .where(where);
+      if (trx) {
+        query = query.transacting(trx);
+      }
+      return query.update(obj);
     };
     entity.beforeUpdate = config.beforeUpdate ? config.beforeUpdate : () => {
       return Promise.resolve();
@@ -76,15 +88,18 @@ module.exports = function (config) {
     };
   }
   if (config.operations.delete) {
-    entity.delete = function (id, where) {
+    entity.delete = function (trx, id, where) {
       where = where || {};
       if (id > 0) {
         where[entity.fieldId] = id;
       }
-      return (config.schema ? $db.withSchema(config.schema) : $db)
+      let query = (config.schema ? $db.withSchema(config.schema) : $db)
         .table(config.table)
-        .where(where)
-        .del();
+        .where(where);
+      if (trx) {
+        query = query.transacting(trx)
+      }
+      return query.del();
     };
     entity.onDelete = config.onDelete ? config.onDelete : () => {
       return Promise.resolve();
