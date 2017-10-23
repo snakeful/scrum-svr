@@ -29,7 +29,7 @@ $entity.afterUpdate = (trx, data, rowsAffected) => {
       return resolve();
     }
     const date = new Date().toISOString().substring(0, 10);
-    $entityPoints.getAll(null, 0, 1, {
+    $entityPoints.getAll(null, null, 0, 1, {
       taskId: actual.id,
       date: date
     }).then(points => {
