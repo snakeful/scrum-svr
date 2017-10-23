@@ -40,10 +40,11 @@ module.exports = function (router, entity) {
       let trx;
       entity.trx(trxp => {
         trx = trxp;
-        return entity.beforeInsert(trx, data).then(() => {
+        entity.beforeInsert(trx, data).then(() => {
           return entity.insert(trx, data.new);
         }).then(inserted => {
           return entity.afterInsert(trx, data, inserted).then(() => {
+            trx.commit();
             res.status(201).json(inserted[0]);
           });
         });
@@ -69,6 +70,7 @@ module.exports = function (router, entity) {
           return entity.update(trx, data.new);
         }).then(updated => {
           return entity.afterUpdate(trx, data, updated).then(() => {
+            trx.commit();
             res.json(updated);
           });
         });
@@ -86,8 +88,11 @@ module.exports = function (router, entity) {
       let trx;
       entity.trx(trxp => {
         trx = trxp;
-        return entity.delete(trx, req.params[entity.fieldId], req.query.where).then(data => {
-          return entity.onDelete(trx, req.query).then(() => {
+        entity.beforeDelete(trx, req.params[entity.fieldId]).then(() => {
+          return entity.delete(trx, req.params[entity.fieldId], req.query.where);
+        }).then(data => {
+          return entity.afterDelete(trx, req.query).then(() => {
+            trx.commit();
             res.json(data);
           });
         });
