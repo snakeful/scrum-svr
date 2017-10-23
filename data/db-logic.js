@@ -101,7 +101,10 @@ module.exports = function (config) {
       }
       return query.del();
     };
-    entity.onDelete = config.onDelete ? config.onDelete : () => {
+    entity.beforeDelete = config.beforeDelete ? config.beforeDelete : () => {
+      return Promise.resolve();
+    };
+    entity.afterDelete = config.afterDelete ? config.afterDelete : () => {
       return Promise.resolve();
     };
   }
