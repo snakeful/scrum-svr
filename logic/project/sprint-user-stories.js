@@ -15,7 +15,7 @@ function updateUserStory (trx, userStoryId, statusId) {
 $entity.afterInsert = (trx, obj, data) => {
   return updateUserStory(trx, obj.new.userStoryId, 1);
 };
-$entity.onDelete = (trx, query, data) => {
+$entity.afterDelete = (trx, query, data) => {
   return updateUserStory(trx, query.where.userStoryId, 0);
 };
 require('../resource')($router, $entity);
