@@ -37,7 +37,9 @@ module.exports = function (router, entity) {
       const data = {
         new: req.body
       };
-      entity.trx(trx => {
+      let trx;
+      entity.trx(trxp => {
+        trx =trxp;
         return entity.beforeInsert(trx, data).then(() => {
           return entity.insert(trx, data.new);
         }).then(inserted => {
@@ -61,7 +63,9 @@ module.exports = function (router, entity) {
         new: req.body
       };
       data.new[entity.fieldId] = req.params[entity.fieldId];
-      entity.trx(trx => {
+      let trx;
+      entity.trx(trxp => {
+        trx = trxp;
         entity.beforeUpdate(trx, data).then(() => {
           return entity.update(trx, data.new);
         }).then(updated => {
