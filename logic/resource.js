@@ -1,8 +1,8 @@
 module.exports = function (router, entity) {
   if (entity.getAll) {
     router.get(`/${entity.resource}`, (req, res) => {
-      entity.getAll(null, req.query.field, req.query.offset, req.query.limit, req.query.where).then(data => {
-        entity.onGetAll(null, data).then(() => {
+      entity.getAll(req.query.field, req.query.offset, req.query.limit, req.query.where).then(data => {
+        entity.onGetAll(data).then(() => {
           res.json(data);
         });
       }).catch(err => {
@@ -15,13 +15,13 @@ module.exports = function (router, entity) {
   }
   if (entity.getById) {
     router.get(`/${entity.resource}/:${entity.fieldId}`, (req, res) => {
-      entity.getById(null, req.query.field, req.params[entity.fieldId]).then(data => {
+      entity.getById(req.query.field, req.params[entity.fieldId]).then(data => {
         if (data.length === 0) {
           return res.status(404).json({
             msg: 'Record not found'
           });
         }
-        entity.onGetById(null, data[0]).then(() => {
+        entity.onGetById(data[0]).then(() => {
           res.json(data[0]);
         })
       }).catch(err => {
@@ -37,19 +37,17 @@ module.exports = function (router, entity) {
       const data = {
         new: req.body
       };
-      let trx;
-      entity.trx(trxp => {
-        trx = trxp;
-        entity.beforeInsert(trx, data).then(() => {
-          return entity.insert(trx, data.new);
+      entity.trx(trx => {
+        entity.beforeInsert(data, trx).then(() => {
+          return entity.insert(data.new, trx);
         }).then(inserted => {
-          return entity.afterInsert(trx, data, inserted).then(() => {
-            trx.commit();
-            res.status(201).json(inserted[0]);
-          });
-        });
+          data.inserted = inserted;
+          return entity.afterInsert(data, inserted, trx);
+        }).then(trx.commit)
+          .catch(trx.rollback);
+      }).then(() => {
+        res.status(201).json(data.inserted[0]);
       }).catch(err => {
-        trx.rollback();
         res.status(500).json({
           err: err,
           data: data.new
@@ -63,19 +61,17 @@ module.exports = function (router, entity) {
         new: req.body
       };
       data.new[entity.fieldId] = req.params[entity.fieldId];
-      let trx;
-      entity.trx(trxp => {
-        trx = trxp;
-        entity.beforeUpdate(trx, data).then(() => {
-          return entity.update(trx, data.new);
-        }).then(updated => {
-          return entity.afterUpdate(trx, data, updated).then(() => {
-            trx.commit();
-            res.json(updated);
-          });
-        });
+      entity.trx(trx => {
+        entity.beforeUpdate(data, trx).then(() => {
+          return entity.update(data.new, trx);
+        }).then(rowsAffected => {
+          data.rowsAffected = rowsAffected;
+          return entity.afterUpdate(data, rowsAffected, trx);
+        }).then(trx.commit)
+          .catch(trx.rollback);
+      }).then(() => {
+        res.json(data.rowsAffected);
       }).catch(err => {
-        trx.rollback();
         res.status(500).json({
           err: err,
           data: req.body
@@ -85,19 +81,19 @@ module.exports = function (router, entity) {
   }
   if (entity.delete)
     router.delete(`/${entity.resource}/:${entity.fieldId}`, (req, res) => {
-      let trx;
-      entity.trx(trxp => {
-        trx = trxp;
-        entity.beforeDelete(trx, req.params[entity.fieldId]).then(() => {
-          return entity.delete(trx, req.params[entity.fieldId], req.query.where);
-        }).then(data => {
-          return entity.afterDelete(trx, req.query).then(() => {
-            trx.commit();
-            res.json(data);
-          });
+      let data = {};
+      entity.trx(trx => {
+        entity.beforeDelete(req.params[entity.fieldId], trx).then(() => {
+          return entity.delete(req.params[entity.fieldId], req.query.where, trx);
+        }).then(deleted => {
+          data.deleted = deleted;
+          return entity.afterDelete(req.query, trx)
+            .then(trx.commit)
+            .catch(trx.rollback);
         });
+      }).then(() => {
+        res.json(data.deleted);
       }).catch(err => {
-        trx.rollback();
         res.status(500).json({
           err: err,
           data: req.body

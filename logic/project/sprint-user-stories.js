@@ -1,22 +1,22 @@
 const $router = require('express').Router();
 const $entity = require('../../data/entity/sprint-user-stories');
 const $entityUserStory = require('../../data/entity/user-stories');
-function updateUserStory (trx, userStoryId, statusId) {
+function updateUserStory (userStoryId, statusId, trx) {
   userStoryId = parseInt(userStoryId, 0);
   return new Promise((resolve, reject) => {
-    $entityUserStory.getById(trx, null, userStoryId).then(userStory => {
+    $entityUserStory.getById(null, userStoryId, trx).then(userStory => {
       userStory[0].statusId = statusId;
-      $entityUserStory.update(trx, userStory[0]).then(() => {
+      $entityUserStory.update(userStory[0], trx).then(() => {
         resolve();
       }, reject);
     }, reject);
   });
 };
-$entity.afterInsert = (trx, obj, data) => {
-  return updateUserStory(trx, obj.new.userStoryId, 1);
+$entity.afterInsert = (obj, data, trx) => {
+  return updateUserStory(obj.new.userStoryId, 1, trx);
 };
-$entity.afterDelete = (trx, query, data) => {
-  return updateUserStory(trx, query.where.userStoryId, 0);
+$entity.afterDelete = (query, data, trx) => {
+  return updateUserStory(query.where.userStoryId, 0, trx);
 };
 require('../resource')($router, $entity);
 module.exports = $router;

@@ -3,7 +3,7 @@ module.exports = entityLogic({
   schema: 'process',
   table: 'taskPoints',
   fields: ['taskId', 'date', 'points'],
-  fieldId: 'taskId',
+  fieldId: ['taskId', 'date'],
   orderBy: 'taskId',
   operations: {
     getAll: true,
