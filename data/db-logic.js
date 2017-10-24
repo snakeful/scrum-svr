@@ -11,7 +11,7 @@ module.exports = function (config) {
   };
   config.orderBy = config.orderBy || 'id';
   if (config.operations.getAll) {
-    entity.getAll = function (trx, fields, offset = 0, limit = 100, where) {
+    entity.getAll = function (fields, offset = 0, limit = 100, where, trx) {
       let query = (config.schema ? $db.withSchema(config.schema) : $db)
         .select(fields || config.fields)
         .from(config.table)
@@ -31,7 +31,7 @@ module.exports = function (config) {
     };
   }
   if (config.operations.getById) {
-    entity.getById = function (trx, fields, id) {
+    entity.getById = function (fields, id, trx) {
       const where = {
         [entity.fieldId]: id
       };
@@ -49,7 +49,7 @@ module.exports = function (config) {
     };
   }
   if (config.operations.create) {
-    entity.insert = function (trx, object) {
+    entity.insert = function (object, trx) {
       let obj = $utils.copyFields(config.fields, object);
       let query = (config.schema ? $db.withSchema(config.schema) : $db)
         .table(config.table)
@@ -67,11 +67,16 @@ module.exports = function (config) {
     };
   }
   if (config.operations.update) {
-    entity.update = function (trx, object) {
+    entity.update = function (object, trx) {
       let obj = $utils.copyFields(config.fields, object);
-      const where = {
-        [entity.fieldId]: object[entity.fieldId]
-      };
+      const where = {};
+      if (entity.fieldId instanceof Array) {
+        entity.fieldId.forEach(id => {
+          where[id] = object[id];
+        });
+      } else {
+        where[entity.fieldId] = object[entity.fieldId];
+      }
       let query = (config.schema ? $db.withSchema(config.schema) : $db)
         .table(config.table)
         .where(where);
@@ -88,7 +93,7 @@ module.exports = function (config) {
     };
   }
   if (config.operations.delete) {
-    entity.delete = function (trx, id, where) {
+    entity.delete = function (id, where, trx) {
       where = where || {};
       if (id > 0) {
         where[entity.fieldId] = id;
