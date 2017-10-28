@@ -27,8 +27,7 @@ $entity.beforeInsert = (data, trx) => {
 
 $entity.afterInsert = (data, inserted, trx) => {
   return new Promise((resolve, reject) => {
-    console.log(inserted);
-    reject('Error');
+    resolve();
   });
 }
 
