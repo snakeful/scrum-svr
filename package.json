@@ -28,7 +28,7 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "ful-ms-svr": "^1.1.4",
-    "knex": "^0.14.0",
+    "knex": "^0.14.1",
     "pg": "^7.4.0",
     "pg-error": "^1.0.0",
     "walk-sync": "^0.3.2"
